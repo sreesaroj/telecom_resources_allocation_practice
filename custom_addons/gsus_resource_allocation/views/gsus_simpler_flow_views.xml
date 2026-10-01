@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_gsus_frt_availability_simpler" model="ir.ui.view">
+        <field name="name">gsus.frt.availability.simpler</field><field name="model">gsus.frt.availability</field><field name="inherit_id" ref="gsus_resource_allocation.view_gsus_frt_availability_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_title')]" position="replace"><div class="oe_title"><label for="customer_id"/><h1><field name="customer_id" options="{'no_create': True, 'no_create_edit': True}"/></h1></div></xpath>
+            <xpath expr="//group/group[1]/field[@name='customer_id']" position="replace"/>
+            <xpath expr="//field[@name='project_id']" position="attributes"><attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute></xpath>
+            <xpath expr="//field[@name='zone_id']" position="attributes"><attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute></xpath>
+            <xpath expr="//group/group[1]/field[@name='responsible_id']" position="before"><field name="location_id" string="FRT" options="{'no_create': True, 'no_create_edit': True}"/></xpath>
+            <xpath expr="//button[@name='action_refresh']" position="before"><button name="action_load_scope" string="Reload FRT Scope" type="object"/></xpath>
+            <xpath expr="//field[@name='line_ids']/list" position="attributes"><attribute name="create">0</attribute><attribute name="delete">0</attribute></xpath>
+            <xpath expr="//field[@name='line_ids']/list/field[@name='resource_type_id']" position="attributes"><attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute></xpath>
+            <xpath expr="//field[@name='available_resource_ids']" position="attributes"><attribute name="invisible">resource_category == 'vehicle'</attribute><attribute name="string">Available Persons</attribute><attribute name="options">{}</attribute><attribute name="context">{'form_view_ref': 'gsus_resource_allocation.view_gsus_resource_simple_form', 'default_resource_type_id': resource_type_id, 'default_status': 'available'}</attribute></xpath>
+            <xpath expr="//field[@name='available_resource_ids']" position="after"><field name="resource_category" column_invisible="True"/><field name="unavailable_resource_ids" string="Not Available Persons" widget="many2many_tags" optional="hide" invisible="resource_category == 'vehicle'"/><field name="available_vehicle_ids" widget="many2many_tags" invisible="resource_category != 'vehicle'" context="{'form_view_ref': 'gsus_resource_allocation.view_gsus_vehicle_form', 'default_gsus_status': 'available'}"/></xpath>
+            <xpath expr="//field[@name='line_ids']/list/field[@name='available_count']" position="before"><field name="alternate_resource_ids" string="Alternate Persons" widget="many2many_tags" invisible="resource_category == 'vehicle'" context="{'form_view_ref': 'gsus_resource_allocation.view_gsus_resource_simple_form', 'default_resource_type_id': resource_type_id, 'default_employment_type': 'temporary', 'default_status': 'available'}"/><field name="alternate_vehicle_ids" string="Alternate Vehicles" widget="many2many_tags" invisible="resource_category != 'vehicle'" context="{'form_view_ref': 'gsus_resource_allocation.view_gsus_vehicle_form', 'default_gsus_status': 'available'}"/></xpath>
+            <xpath expr="//field[@name='line_ids']/list/field[@name='alternate_count']" position="attributes"><attribute name="column_invisible">True</attribute></xpath>
+            <xpath expr="//field[@name='line_ids']/list/field[@name='total_available']" position="attributes"><attribute name="column_invisible">True</attribute></xpath>
+            <xpath expr="//field[@name='line_ids']/list/field[@name='gap_start_date']" position="attributes"><attribute name="column_invisible">True</attribute></xpath>
+            <xpath expr="//field[@name='line_ids']/list/field[@name='aging_days']" position="attributes"><attribute name="column_invisible">True</attribute></xpath>
+            <xpath expr="//field[@name='line_ids']/list/field[@name='expected_closure_date']" position="attributes"><attribute name="column_invisible">True</attribute></xpath>
+            <xpath expr="//field[@name='line_ids']/list/field[@name='gap_status']" position="attributes"><attribute name="optional">hide</attribute></xpath>
+        </field>
+    </record>
+    <record id="view_gsus_frt_availability_list_clean" model="ir.ui.view">
+        <field name="name">gsus.frt.availability.list.clean</field><field name="model">gsus.frt.availability</field><field name="inherit_id" ref="gsus_resource_allocation.view_gsus_frt_availability_list"/>
+        <field name="arch" type="xml"><xpath expr="//field[@name='readiness_percent']" position="replace"><field name="readiness_percent" string="Readiness %" digits="[16, 2]"/></xpath></field>
+    </record>
+    <record id="view_gsus_location_scope_simple" model="ir.ui.view">
+        <field name="name">gsus.location.scope.simple</field><field name="model">gsus.location</field><field name="inherit_id" ref="gsus_resource_allocation.view_gsus_location_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='zone_id']" position="attributes"><attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute></xpath>
+            <xpath expr="//field[@name='district_id']" position="attributes"><attribute name="invisible">1</attribute></xpath>
+            <xpath expr="//field[@name='circle']" position="attributes"><attribute name="invisible">1</attribute></xpath>
+            <xpath expr="//field[@name='frt_hours']" position="attributes"><attribute name="invisible">1</attribute></xpath>
+            <xpath expr="//field[@name='portal_user_ids']" position="attributes"><attribute name="invisible">1</attribute></xpath>
+            <xpath expr="//field[@name='latitude']" position="attributes"><attribute name="invisible">1</attribute></xpath>
+            <xpath expr="//field[@name='longitude']" position="attributes"><attribute name="invisible">1</attribute></xpath>
+            <xpath expr="//field[@name='assignment_ids']/ancestor::page[1]" position="attributes"><attribute name="invisible">1</attribute></xpath>
+            <xpath expr="//field[@name='requirement_ids']/list/field[@name='shift_id']" position="attributes"><attribute name="column_invisible">True</attribute></xpath>
+            <xpath expr="//field[@name='requirement_ids']/list/field[@name='actual_available_qty']" position="attributes"><attribute name="column_invisible">True</attribute></xpath>
+            <xpath expr="//field[@name='requirement_ids']/list/field[@name='reserved_qty']" position="attributes"><attribute name="column_invisible">True</attribute></xpath>
+            <xpath expr="//field[@name='requirement_ids']/list/field[@name='allocated_qty']" position="attributes"><attribute name="column_invisible">True</attribute></xpath>
+            <xpath expr="//field[@name='requirement_ids']/list/field[@name='actual_gap_qty']" position="attributes"><attribute name="column_invisible">True</attribute></xpath>
+            <xpath expr="//field[@name='requirement_ids']/list/field[@name='resource_type_id']" position="attributes"><attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute></xpath>
+            <xpath expr="//field[@name='requirement_ids']/list/field[@name='required_count']" position="after"><field name="resource_category" column_invisible="True"/><field name="assigned_resource_ids" string="Assigned Employees" widget="many2many_tags" invisible="resource_category == 'vehicle'" domain="[('resource_type_id', '=', resource_type_id), ('resource_source', '!=', 'vehicle'), ('active', '=', True)]" options="{'no_create': True, 'no_create_edit': True}"/><field name="assigned_vehicle_ids" string="Assigned Vehicle" widget="many2many_tags" invisible="resource_category != 'vehicle'" domain="[('active', '=', True)]" options="{'no_create': True, 'no_create_edit': True}"/></xpath>
+        </field>
+    </record>
+    <record id="view_gsus_resource_form_optional_links" model="ir.ui.view">
+        <field name="name">gsus.resource.form.optional.links</field>
+        <field name="model">gsus.resource</field>
+        <field name="inherit_id" ref="gsus_resource_allocation.view_gsus_resource_form"/>
+        <field name="arch" type="xml">
+            <field name="employee_id" position="attributes"><attribute name="required">0</attribute></field>
+            <field name="vehicle_id" position="attributes"><attribute name="required">0</attribute></field>
+            <field name="vendor_id" position="attributes"><attribute name="required">0</attribute></field>
+        </field>
+    </record>
+</odoo>

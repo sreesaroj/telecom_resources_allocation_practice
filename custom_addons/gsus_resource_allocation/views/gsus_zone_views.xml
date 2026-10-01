@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_gsus_zone_list" model="ir.ui.view"><field name="name">gsus.zone.list</field><field name="model">gsus.zone</field><field name="arch" type="xml"><list><field name="sequence" widget="handle"/><field name="name"/><field name="code"/><field name="customer_id"/><field name="project_id"/><field name="manager_id"/><field name="active"/></list></field></record>
+    <record id="view_gsus_zone_form" model="ir.ui.view"><field name="name">gsus.zone.form</field><field name="model">gsus.zone</field><field name="arch" type="xml"><form><sheet><div class="oe_title"><label for="name"/><h1><field name="name"/></h1></div><group><group><field name="code"/><field name="project_id"/><field name="customer_id"/></group><group><field name="manager_id"/><field name="active"/></group></group><notebook><page string="FRT Locations"><field name="location_ids"><list editable="bottom"><field name="sequence" widget="handle"/><field name="name"/><field name="code"/><field name="responsible_id"/></list></field></page></notebook></sheet><chatter/></form></field></record>
+    <record id="action_gsus_zone" model="ir.actions.act_window"><field name="name">Zones</field><field name="res_model">gsus.zone</field><field name="view_mode">list,form</field></record>
+</odoo>

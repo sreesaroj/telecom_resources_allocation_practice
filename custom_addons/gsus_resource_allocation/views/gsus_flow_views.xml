@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_gsus_resource_form_service" model="ir.ui.view">
+        <field name="name">gsus.resource.form.service</field><field name="model">gsus.resource</field><field name="inherit_id" ref="gsus_resource_allocation.view_gsus_resource_form"/>
+        <field name="arch" type="xml"><xpath expr="//field[@name='resource_type_id']" position="after"><field name="service_category_id"/></xpath></field>
+    </record>
+    <record id="view_gsus_resource_list_service" model="ir.ui.view">
+        <field name="name">gsus.resource.list.service</field><field name="model">gsus.resource</field><field name="inherit_id" ref="gsus_resource_allocation.view_gsus_resource_list"/>
+        <field name="arch" type="xml"><xpath expr="//field[@name='resource_type_id']" position="after"><field name="service_category_id" optional="show"/></xpath></field>
+    </record>
+    <record id="view_gsus_availability_form_service" model="ir.ui.view">
+        <field name="name">gsus.availability.form.service</field><field name="model">gsus.availability</field><field name="inherit_id" ref="gsus_resource_allocation.view_gsus_availability_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='location_id']" position="before"><field name="service_category_id" readonly="state != 'draft'"/></xpath>
+            <xpath expr="//button[@name='action_submit']" position="before"><button name="action_refresh_resources" string="Refresh Actual Resources" type="object" invisible="state != 'draft'"/></xpath>
+        </field>
+    </record>
+    <record id="view_gsus_request_form_service" model="ir.ui.view">
+        <field name="name">gsus.resource.request.form.service</field><field name="model">gsus.resource.request</field><field name="inherit_id" ref="gsus_resource_allocation.view_gsus_request_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='project_id']" position="after"><field name="service_category_id" readonly="state != 'draft'"/></xpath>
+            <xpath expr="//button[@name='action_reject']" position="before"><button name="action_deploy" string="Deploy" type="object" class="btn-primary" groups="gsus_resource_allocation.group_gsus_manager" invisible="state != 'allocated'"/></xpath>
+            <xpath expr="//button[@name='action_complete']" position="attributes"><attribute name="invisible">state not in ('allocated','deployed')</attribute></xpath>
+            <xpath expr="//field[@name='state']" position="attributes"><attribute name="statusbar_visible">draft,submitted,review,approved,allocated,deployed,completed</attribute></xpath>
+        </field>
+    </record>
+    <record id="view_gsus_requirement_list_service" model="ir.ui.view">
+        <field name="name">gsus.requirement.list.service</field><field name="model">gsus.requirement</field><field name="inherit_id" ref="gsus_resource_allocation.view_gsus_requirement_list"/>
+        <field name="arch" type="xml"><xpath expr="//field[@name='resource_type_id']" position="before"><field name="service_category_id" optional="show"/></xpath></field>
+    </record>
+    <record id="view_gsus_location_form_service" model="ir.ui.view">
+        <field name="name">gsus.location.form.service</field><field name="model">gsus.location</field><field name="inherit_id" ref="gsus_resource_allocation.view_gsus_location_form"/>
+        <field name="arch" type="xml"><xpath expr="//field[@name='frt_hours']" position="after"><field name="service_category_ids" widget="many2many_tags"/></xpath></field>
+    </record>
+</odoo>

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_partner_form_gsus_portal_users" model="ir.ui.view">
+        <field name="name">res.partner.form.gsus.portal.users</field><field name="model">res.partner</field><field name="inherit_id" ref="gsus_resource_allocation.view_partner_form_gsus"/>
+        <field name="arch" type="xml"><xpath expr="//field[@name='telecom_portal_enabled']" position="after"><field name="telecom_portal_user_ids" widget="many2many_tags" options="{'no_create': True, 'no_create_edit': True}" invisible="not is_telecom_customer"/></xpath></field>
+    </record>
+
+    <template id="portal_gsus_simple_dashboard" name="GSUS Simple Resource Dashboard">
+        <t t-call="portal.portal_layout">
+            <div class="gsus-shell py-4">
+                <section class="gsus-hero">
+                    <div><span class="gsus-eyebrow">GSUS OPERATIONS</span><h1>FRT Resource Dashboard</h1><p>Current scope, availability and resource gaps for your permitted customer.</p></div>
+                    <div class="d-flex flex-column align-items-end gap-3"><div class="gsus-live"><span/> LIVE POSITION</div><a t-att-href="export_url" class="btn btn-light rounded-pill px-4 fw-bold">Download Excel</a><a t-if="is_internal" t-att-href="backend_url" class="btn btn-outline-light rounded-pill px-4 fw-bold">Back to GSUS Operations</a></div>
+                </section>
+                <section class="gsus-panel mt-4" t-if="customers">
+                    <form method="get" action="/gsus/dashboard" class="row g-3 align-items-end">
+                        <div class="col-12 col-md-3"><label class="form-label fw-bold">Date</label><input type="date" name="date" t-att-value="selected_date" class="form-control"/></div>
+                        <div class="col-12 col-md-3"><label class="form-label fw-bold">Customer</label><select name="customer_id" class="form-select"><option value="">All Customers</option><option t-foreach="filter_customers" t-as="customer" t-att-value="customer.id" t-att-selected="customer.id == selected_customer_id" t-out="customer.name"/></select></div>
+                        <div class="col-12 col-md-3"><label class="form-label fw-bold">Zone</label><select name="zone_id" class="form-select"><option value="">All Zones</option><option t-foreach="filter_zones" t-as="zone" t-att-value="zone.id" t-att-selected="zone.id == selected_zone_id" t-out="zone.name"/></select></div>
+                        <div class="col-12 col-md-3 d-flex gap-2"><button type="submit" class="btn btn-primary flex-grow-1">Apply Filter</button><a href="/gsus/dashboard" class="btn btn-outline-secondary">Reset</a></div>
+                    </form>
+                </section>
+                <div t-if="not customers" class="alert alert-warning mt-4">No telecom customer is assigned to this portal user. Please contact the administrator.</div>
+                <section class="gsus-metrics" t-if="customers">
+                    <t t-call="gsus_resource_allocation.gsus_metric_card"><t t-set="label">FRT Locations</t><t t-set="value" t-value="len(sheets)"/><t t-set="hint">Current operational sites</t><t t-set="tone">blue</t></t>
+                    <t t-call="gsus_resource_allocation.gsus_metric_card"><t t-set="label">Total Scope</t><t t-set="value" t-value="total_scope"/><t t-set="hint">Required resources</t><t t-set="tone">violet</t></t>
+                    <t t-call="gsus_resource_allocation.gsus_metric_card"><t t-set="label">Available</t><t t-set="value" t-value="total_available"/><t t-set="hint">Regular available resources</t><t t-set="tone">green</t></t>
+                    <t t-call="gsus_resource_allocation.gsus_metric_card"><t t-set="label">Alternate</t><t t-set="value" t-value="total_alternate"/><t t-set="hint" t-value="'Regular: %s · Final Gap: %s' % (total_available, total_gap)"/><t t-set="tone">violet</t></t>
+                    <t t-call="gsus_resource_allocation.gsus_metric_card"><t t-set="label">Open Gap</t><t t-set="value" t-value="total_gap"/><t t-set="hint">Action required</t><t t-set="tone">red</t></t>
+                </section>
+                <section class="gsus-panel mt-4" t-if="is_internal">
+                    <div class="gsus-panel__head"><div><span class="gsus-eyebrow">OPERATIONS HUB</span><h2>Operational Dashboards</h2></div><span class="text-muted">Reports and daily movement in one place</span></div>
+                    <div class="gsus-service-grid">
+                        <a t-att-href="vehicle_km_dashboard_url" class="gsus-service-card">
+                            <div class="gsus-service-card__icon">KM</div><div><h3>Vehicle KM Dashboard</h3><p><strong t-out="total_vehicle_km"/> KM across <t t-out="vehicle_km_entry_count"/> vehicle entries for the selected filters.</p></div><span class="gsus-service-card__arrow">&#8594;</span>
+                        </a>
+                        <a t-att-href="alternate_dashboard_url" class="gsus-service-card">
+                            <div class="gsus-service-card__icon">TA</div><div><h3>Temporary Alternates</h3><p><strong t-out="temporary_alternate_count"/> replacement allocation(s) for the selected filters.</p></div><span class="gsus-service-card__arrow">&#8594;</span>
+                        </a>
+                    </div>
+                </section>
+                <section class="gsus-panel mt-4" t-if="customers">
+                    <div class="gsus-panel__head"><div><span class="gsus-eyebrow">CUSTOMER ACCESS</span><h2 t-out="', '.join(customers.mapped('name'))"/></div><span class="text-muted"><t t-out="len(projects)"/> project(s) · <t t-out="len(zones)"/> zone(s)</span></div>
+                    <div class="table-responsive"><table class="table gsus-table"><thead><tr><th>Date</th><th>Project Hours</th><th>Zone</th><th>FRT Location</th><th>Shift Timings</th><th>Scope</th><th>Available</th><th>Gap</th><th>Readiness</th></tr></thead><tbody>
+                        <tr t-foreach="sheets" t-as="sheet"><td><span t-field="sheet.availability_date"/></td><td t-out="dict(sheet.project_id._fields['gsus_hour_format'].selection).get(sheet.project_id.gsus_hour_format, '—')"/><td t-out="sheet.zone_id.name"/><td><strong t-out="sheet.location_id.name"/></td><td><small class="d-block"><strong>First:</strong> <span t-if="sheet.first_shift_check_in" t-field="sheet.first_shift_check_in"/><span t-else="">—</span> – <span t-if="sheet.first_shift_check_out" t-field="sheet.first_shift_check_out"/><span t-else="">—</span></small><small class="d-block"><strong>Second:</strong> <span t-if="sheet.second_shift_check_in" t-field="sheet.second_shift_check_in"/><span t-else="">—</span> – <span t-if="sheet.second_shift_check_out" t-field="sheet.second_shift_check_out"/><span t-else="">—</span></small></td><td t-out="sheet.total_scope"/><td><span class="badge text-bg-success" t-out="sheet.total_available"/></td><td><span t-attf-class="badge #{'text-bg-danger' if sheet.total_gap else 'text-bg-success'}" t-out="sheet.total_gap"/></td><td><t t-out="round(sheet.readiness_percent, 1)"/>%</td></tr>
+                    </tbody></table></div>
+                </section>
+                <section class="gsus-panel mt-4" t-if="vehicles">
+                    <div class="gsus-panel__head"><div><span class="gsus-eyebrow">FLEET</span><h2>Vehicle Information</h2></div><span class="badge text-bg-primary"><t t-out="len(vehicles)"/> vehicle(s)</span></div>
+                    <div class="table-responsive"><table class="table gsus-table align-middle"><thead><tr><th>Image</th><th>Vehicle Number</th><th>Model</th><th>Vehicle Type</th><th>Vendor</th><th>Project</th><th>FRT Location</th><th>Insurance Expiry</th><th>FC Date</th></tr></thead><tbody>
+                        <tr t-foreach="vehicles" t-as="vehicle"><td><img t-if="vehicle.image_1920" t-att-src="'/api/gsus/vehicle/%s/image' % vehicle.id" t-att-alt="vehicle.license_plate or 'Vehicle'" style="width:96px;height:64px;object-fit:cover;border-radius:8px;"/><span t-else="" class="text-muted">No image</span></td><td><strong t-out="vehicle.license_plate or '—'"/></td><td t-out="vehicle.model_id.display_name or '—'"/><td><span class="badge text-bg-primary" t-out="dict(vehicle._fields['gsus_vehicle_type'].selection).get(vehicle.gsus_vehicle_type, 'GSUS')"/></td><td t-out="vehicle.gsus_vendor_id.name or '—'"/><td t-out="vehicle.gsus_project_id.name or '—'"/><td t-out="vehicle.gsus_location_id.name or '—'"/><td><span t-if="vehicle.insurance_expiry_date" t-field="vehicle.insurance_expiry_date"/><span t-else="">—</span></td><td><span t-if="vehicle.fc_date" t-field="vehicle.fc_date"/><span t-else="">—</span></td></tr>
+                    </tbody></table></div>
+                </section>
+                <section class="gsus-panel mt-4" t-if="gaps">
+                    <div class="gsus-panel__head"><div><span class="gsus-eyebrow text-danger">SHEET 2</span><h2>Open Gap Details</h2></div><span class="badge text-bg-danger"><t t-out="len(gaps)"/> lines</span></div>
+                    <div class="table-responsive"><table class="table gsus-table"><thead><tr><th>Zone</th><th>FRT</th><th>Resource Type</th><th>Scope</th><th>Available</th><th>Gap</th><th>Aging</th><th>Remarks</th></tr></thead><tbody>
+                        <tr t-foreach="gaps" t-as="line"><td t-out="line.zone_id.name"/><td t-out="line.location_id.name"/><td><strong t-out="line.resource_type_id.name"/></td><td t-out="line.scope_count"/><td t-out="line.total_available"/><td><span class="badge text-bg-danger" t-out="line.gap_count"/></td><td><t t-out="line.aging_days"/> days</td><td t-out="line.remarks or '—'"/></tr>
+                    </tbody></table></div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_gsus_operations_report" name="GSUS Operational Report Dashboard">
+        <t t-call="portal.portal_layout">
+            <div class="gsus-shell py-4">
+                <a t-att-href="dashboard_url" class="gsus-back">&#8592; Back to Operations Dashboard</a>
+                <section class="gsus-hero gsus-hero--compact">
+                    <div>
+                        <span class="gsus-eyebrow">GSUS OPERATIONS INTELLIGENCE</span>
+                        <h1 t-if="report_kind == 'km_summary'">Vehicle KM Dashboard</h1>
+                        <h1 t-if="report_kind == 'alternates'">Temporary Alternate Employees</h1>
+                        <p t-if="report_kind == 'km_summary'">FRT-wise and vehicle-wise travel performance in one clear view.</p>
+                        <p t-if="report_kind == 'alternates'">Original employee and temporary replacement allocation tracking.</p>
+                    </div>
+                    <div class="d-flex flex-column align-items-end gap-3"><div class="gsus-live"><span/> LIVE REPORT</div><a t-att-href="report_export_url" class="btn btn-light rounded-pill px-4 fw-bold">Download Excel</a></div>
+                </section>
+
+                <section class="gsus-panel mt-4">
+                    <form method="get" t-att-action="report_action" class="row g-3 align-items-end">
+                        <div class="col-12 col-md-4 col-xl-2"><label class="form-label fw-bold">Month</label><input type="month" name="month" t-att-value="selected_month" class="form-control"/></div>
+                        <div class="col-12 col-md-4 col-xl-2"><label class="form-label fw-bold">From Date</label><input type="date" name="from_date" t-att-value="selected_from_date" class="form-control"/></div>
+                        <div class="col-12 col-md-4 col-xl-2"><label class="form-label fw-bold">To Date</label><input type="date" name="to_date" t-att-value="selected_to_date" class="form-control"/></div>
+                        <div class="col-12 col-md-4 col-xl-2"><label class="form-label fw-bold">Customer</label><select name="customer_id" class="form-select" onchange="this.form.querySelector('[name=zone_id]').value=''; this.form.querySelector('[name=location_id]').value=''; this.form.submit()"><option value="">All Customers</option><option t-foreach="filter_customers" t-as="customer" t-att-value="customer.id" t-att-selected="customer.id == selected_customer_id" t-out="customer.name"/></select></div>
+                        <div class="col-12 col-md-4 col-xl-2"><label class="form-label fw-bold">Zone</label><select name="zone_id" class="form-select" onchange="this.form.querySelector('[name=location_id]').value=''; this.form.submit()"><option value="">All Zones</option><option t-foreach="filter_zones" t-as="zone" t-att-value="zone.id" t-att-selected="zone.id == selected_zone_id" t-out="zone.name"/></select></div>
+                        <div class="col-12 col-md-4 col-xl-2"><label class="form-label fw-bold">FRT Location</label><select name="location_id" class="form-select"><option value="">All Locations</option><option t-foreach="filter_locations" t-as="location" t-att-value="location.id" t-att-selected="location.id == selected_location_id" t-out="location.name"/></select></div>
+                        <div class="col-12 col-md-4 col-xl-2" t-if="report_kind == 'km_summary'"><label class="form-label fw-bold">Vehicle</label><select name="vehicle_id" class="form-select"><option value="">All Vehicles</option><option t-foreach="filter_vehicles" t-as="vehicle" t-att-value="vehicle.id" t-att-selected="vehicle.id == selected_vehicle_id" t-out="vehicle.display_name"/></select></div>
+                        <div class="col-12 col-md-4 col-xl-2" t-if="report_kind == 'alternates'"><label class="form-label fw-bold">Employee</label><select name="employee_id" class="form-select"><option value="">All Employees</option><option t-foreach="filter_employees" t-as="employee" t-att-value="employee.id" t-att-selected="employee.id == selected_employee_id" t-out="employee.name"/></select></div>
+                        <div class="col-12 col-md-4 col-xl-2 d-flex gap-2"><button type="submit" class="btn btn-primary flex-grow-1">Apply</button><a t-att-href="report_action" class="btn btn-outline-secondary">Reset</a></div>
+                    </form>
+                </section>
+
+                <section class="gsus-metrics" t-if="report_kind == 'km_summary'">
+                    <t t-call="gsus_resource_allocation.gsus_metric_card"><t t-set="label">Scope KM</t><t t-set="value" t-value="total_scope_km"/><t t-set="hint">Monthly target configured for FRTs</t><t t-set="tone">violet</t></t>
+                    <t t-call="gsus_resource_allocation.gsus_metric_card"><t t-set="label">Actual KM</t><t t-set="value" t-value="total_vehicle_km"/><t t-set="hint">Selected reporting period</t><t t-set="tone">blue</t></t>
+                    <t t-call="gsus_resource_allocation.gsus_metric_card"><t t-set="label">Less KM</t><t t-set="value" t-value="total_under_km"/><t t-set="hint">Below monthly scope</t><t t-set="tone">red</t></t>
+                    <t t-call="gsus_resource_allocation.gsus_metric_card"><t t-set="label">Excess KM</t><t t-set="value" t-value="total_over_km"/><t t-set="hint">Above monthly scope</t><t t-set="tone">green</t></t>
+                </section>
+                <section class="gsus-metrics" t-if="report_kind == 'alternates'">
+                    <t t-call="gsus_resource_allocation.gsus_metric_card"><t t-set="label">Temporary Alternates</t><t t-set="value" t-value="alternate_count"/><t t-set="hint">Replacement allocations</t><t t-set="tone">violet</t></t>
+                    <t t-call="gsus_resource_allocation.gsus_metric_card"><t t-set="label">FRT Locations</t><t t-set="value" t-value="len(alternate_entries.mapped('location_id'))"/><t t-set="hint">Locations using alternates</t><t t-set="tone">blue</t></t>
+                    <t t-call="gsus_resource_allocation.gsus_metric_card"><t t-set="label">Employees Replaced</t><t t-set="value" t-value="len(alternate_entries.mapped('original_resource_id'))"/><t t-set="hint">Original unavailable persons</t><t t-set="tone">red</t></t>
+                    <t t-call="gsus_resource_allocation.gsus_metric_card"><t t-set="label">Resource Types</t><t t-set="value" t-value="len(alternate_entries.mapped('resource_type_id'))"/><t t-set="hint">Roles covered</t><t t-set="tone">green</t></t>
+                </section>
+
+                <section class="gsus-panel mt-4" t-if="report_kind == 'km_summary'">
+                    <div class="gsus-panel__head"><div><span class="gsus-eyebrow">LOCATION PERFORMANCE</span><h2>FRT KM Summary</h2></div><span class="badge text-bg-primary"><t t-out="len(location_summaries)"/> locations</span></div>
+                    <div class="gsus-summary-grid">
+                        <article class="gsus-summary-card" t-foreach="location_summaries" t-as="item">
+                            <div><span class="gsus-zone" t-out="item['zone']"/><h3 t-out="item['name']"/></div>
+                            <div class="gsus-summary-card__value"><t t-out="item['total_km']"/><small> Actual KM</small></div>
+                            <div class="gsus-summary-card__meta"><span>Scope: <t t-out="item['scope_km']"/> KM</span><span>Less: <t t-out="item['under_km']"/> KM</span><span>Excess: <t t-out="item['over_km']"/> KM</span></div>
+                        </article>
+                    </div>
+                    <div t-if="not location_summaries" class="gsus-empty">No vehicle KM entries found for the selected filters.</div>
+                </section>
+                <section class="gsus-panel mt-4" t-if="report_kind == 'km_summary' and vehicle_summaries">
+                    <div class="gsus-panel__head"><div><span class="gsus-eyebrow">FLEET LEADERBOARD</span><h2>Vehicle Performance</h2></div></div>
+                    <div class="table-responsive"><table class="table gsus-table"><thead><tr><th>Vehicle</th><th>Vehicle Number</th><th>Entries</th><th>Own KM</th><th>Replacement KM</th><th>Operational Cumulative KM</th></tr></thead><tbody><tr t-foreach="vehicle_summaries" t-as="item"><td><strong t-out="item['name']"/></td><td t-out="item['number']"/><td t-out="item['entries']"/><td t-out="item['own_km']"/><td t-out="item['replacement_km']"/><td><span class="gsus-km-pill"><t t-out="item['operational_km']"/> KM</span></td></tr></tbody></table></div>
+                </section>
+
+
+                <section class="gsus-panel mt-4" t-if="report_kind == 'alternates'">
+                    <div class="gsus-panel__head"><div><span class="gsus-eyebrow">REPLACEMENT TRACKER</span><h2>Temporary Employee Allocations</h2></div><span class="badge text-bg-primary"><t t-out="alternate_count"/> allocations</span></div>
+                    <div class="table-responsive"><table class="table gsus-table"><thead><tr><th>Date</th><th>Zone</th><th>FRT Location</th><th>Resource Type</th><th>Original Person</th><th>Temporary Alternate</th><th>Remarks</th></tr></thead><tbody><tr t-foreach="alternate_entries" t-as="entry"><td><span t-field="entry.availability_date"/></td><td t-out="entry.zone_id.name"/><td><strong t-out="entry.location_id.name"/></td><td><span class="badge text-bg-primary" t-out="entry.resource_type_id.name"/></td><td><span class="gsus-person-pill gsus-person-pill--out" t-out="entry.original_resource_id.name or 'Not specified'"/></td><td><span class="gsus-person-pill gsus-person-pill--in" t-out="entry.alternate_resource_id.name"/></td><td t-out="entry.remarks or '—'"/></tr></tbody></table></div>
+                    <div t-if="not alternate_entries" class="gsus-empty">No temporary alternate allocations found for the selected filters.</div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <record id="menu_gsus_dashboard" model="ir.ui.menu"><field name="active" eval="True"/><field name="name">Dashboard</field><field name="sequence">1</field></record>
+    <record id="menu_gsus_root" model="ir.ui.menu"><field name="action" ref="action_gsus_frt_availability"/></record>
+</odoo>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="seq_gsus_assignment" model="ir.sequence"><field name="name">GSUS Assignment</field><field name="code">gsus.assignment</field><field name="prefix">ASN/%(year)s/</field><field name="padding">5</field></record>
+    <record id="seq_gsus_availability" model="ir.sequence"><field name="name">GSUS Availability</field><field name="code">gsus.availability</field><field name="prefix">AVL/%(year)s/</field><field name="padding">5</field></record>
+    <record id="seq_gsus_gap" model="ir.sequence"><field name="name">GSUS Gap</field><field name="code">gsus.gap</field><field name="prefix">GAP/%(year)s/</field><field name="padding">5</field></record>
+    <record id="seq_gsus_resource_request" model="ir.sequence"><field name="name">GSUS Resource Request</field><field name="code">gsus.resource.request</field><field name="prefix">REQ/%(year)s/</field><field name="padding">5</field></record>
+    <record id="seq_gsus_resource" model="ir.sequence"><field name="name">GSUS Person Resource</field><field name="code">gsus.resource</field><field name="prefix">PER/%(year)s/</field><field name="padding">5</field></record>
+</odoo>

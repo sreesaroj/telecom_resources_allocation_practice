@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_dashboard_service_catalog" inherit_id="gsus_resource_allocation.portal_gsus_dashboard" priority="50">
+        <xpath expr="//section[hasclass('gsus-panel')][1]" position="before">
+            <section class="gsus-panel mt-4">
+                <div class="gsus-panel__head"><div><span class="gsus-eyebrow">QUICK ACCESS</span><h2>Browse by Service</h2></div><a href="/my/gsus/resources" class="btn btn-outline-primary rounded-pill">View all</a></div>
+                <div class="gsus-service-grid">
+                    <a t-foreach="service_categories" t-as="category" t-att-href="'/my/gsus/resources?service_category_id=%s' % category.id" class="gsus-service-card">
+                        <span class="gsus-service-card__icon" t-out="category.code[:2]"/><div><h3 t-out="category.name"/><p t-out="category.description or 'Browse available operational resources'"/></div><span class="gsus-service-card__arrow">&#8594;</span>
+                    </a>
+                </div>
+            </section>
+        </xpath>
+    </template>
+    <template id="portal_resources_advanced_filters" inherit_id="gsus_resource_allocation.portal_available_resources" priority="50">
+        <xpath expr="//section[hasclass('gsus-panel')]/form[@method='get']" position="replace">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-lg-3"><label class="form-label">Search</label><input name="search" class="form-control" t-att-value="search_term" placeholder="Name, ID or location"/></div>
+                <div class="col-lg-3"><label class="form-label">Project</label><select name="project_id" class="form-select"><option value="">All projects</option><option t-foreach="projects" t-as="project" t-att-value="project.id" t-att-selected="project.id == selected_project" t-out="project.name"/></select></div>
+                <div class="col-lg-2"><label class="form-label">Service</label><select name="service_category_id" class="form-select"><option value="">All services</option><option t-foreach="categories" t-as="category" t-att-value="category.id" t-att-selected="category.id == selected_category" t-out="category.name"/></select></div>
+                <div class="col-lg-2"><label class="form-label">Zone</label><select name="zone_id" class="form-select"><option value="">All zones</option><option t-foreach="zones" t-as="zone" t-att-value="zone.id" t-att-selected="zone.id == selected_zone" t-out="zone.name"/></select></div>
+                <div class="col-lg-2"><label class="form-label">FRT Location</label><select name="location_id" class="form-select"><option value="">All FRTs</option><option t-foreach="locations" t-as="location" t-att-value="location.id" t-att-selected="location.id == selected_location" t-out="location.name"/></select></div>
+                <div class="col-lg-3"><label class="form-label">Shift</label><select name="shift_id" class="form-select"><option value="">All shifts</option><option t-foreach="shifts" t-as="shift" t-att-value="shift.id" t-att-selected="shift.id == selected_shift" t-out="shift.name"/></select></div>
+                <div class="col-lg-3"><label class="form-label">Resource Type</label><select name="resource_type_id" class="form-select"><option value="">All types</option><option t-foreach="resource_types" t-as="resource_type" t-att-value="resource_type.id" t-att-selected="resource_type.id == selected_type" t-out="resource_type.name"/></select></div>
+                <div class="col-lg-2"><button class="btn btn-dark w-100">Apply Filters</button></div><div class="col-lg-2"><a href="/my/gsus/resources" class="btn btn-outline-secondary w-100">Clear</a></div>
+            </form>
+        </xpath>
+        <xpath expr="//table/thead/tr/th[4]" position="after"><th>Service</th></xpath>
+        <xpath expr="//table/tbody/tr[@t-foreach='resources']/td[4]" position="after"><td t-out="resource.service_category_id.name or 'Unclassified'"/></xpath>
+    </template>
+</odoo>

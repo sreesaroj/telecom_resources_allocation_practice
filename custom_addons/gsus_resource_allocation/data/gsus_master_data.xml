@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="type_vehicle" model="gsus.resource.type"><field name="name">Vehicle</field><field name="code">VEHICLE</field><field name="category">vehicle</field><field name="sequence">10</field><field name="color">2</field></record>
+    <record id="type_driver" model="gsus.resource.type"><field name="name">Driver</field><field name="code">DRIVER</field><field name="sequence">20</field><field name="color">4</field></record>
+    <record id="type_helper" model="gsus.resource.type"><field name="name">Helper</field><field name="code">HELPER</field><field name="sequence">30</field><field name="color">3</field></record>
+    <record id="type_patroller" model="gsus.resource.type"><field name="name">Patroller</field><field name="code">PATROLLER</field><field name="sequence">40</field><field name="color">1</field></record>
+    <record id="type_splicer" model="gsus.resource.type"><field name="name">Splicer</field><field name="code">SPLICER</field><field name="sequence">50</field><field name="color">5</field></record>
+    <record id="type_engineer" model="gsus.resource.type"><field name="name">Engineer (OME)</field><field name="code">ENGINEER</field><field name="sequence">60</field><field name="color">6</field></record>
+
+    <record id="zone_ches" model="gsus.zone"><field name="name">Chennai E&amp;S</field><field name="code">CHES</field><field name="sequence">10</field></record>
+    <record id="zone_chnw" model="gsus.zone"><field name="name">Chennai N&amp;W</field><field name="code">CHNW</field><field name="sequence">20</field></record>
+    <record id="zone_salem" model="gsus.zone"><field name="name">Salem</field><field name="code">SLM</field><field name="sequence">30</field></record>
+    <record id="zone_trichy" model="gsus.zone"><field name="name">Trichy</field><field name="code">TRY</field><field name="sequence">40</field></record>
+    <record id="zone_madurai" model="gsus.zone"><field name="name">Madurai</field><field name="code">MDU</field><field name="sequence">50</field></record>
+
+    <record id="loc_velachery" model="gsus.location"><field name="name">Velachery</field><field name="code">VEL</field><field name="zone_id" ref="zone_ches"/></record>
+    <record id="loc_tnagar" model="gsus.location"><field name="name">T Nagar</field><field name="code">TNG</field><field name="zone_id" ref="zone_ches"/></record>
+    <record id="loc_purasai" model="gsus.location"><field name="name">Purasaiwakkam</field><field name="code">PUR</field><field name="zone_id" ref="zone_ches"/></record>
+    <record id="loc_siruseri" model="gsus.location"><field name="name">Siruseri</field><field name="code">SIR</field><field name="zone_id" ref="zone_ches"/></record>
+    <record id="loc_tambaram" model="gsus.location"><field name="name">Tambaram</field><field name="code">TAM</field><field name="zone_id" ref="zone_ches"/></record>
+    <record id="loc_ambattur" model="gsus.location"><field name="name">Ambattur</field><field name="code">AMB</field><field name="zone_id" ref="zone_chnw"/></record>
+    <record id="loc_porur" model="gsus.location"><field name="name">Porur</field><field name="code">POR</field><field name="zone_id" ref="zone_chnw"/></record>
+    <record id="loc_guindy" model="gsus.location"><field name="name">Guindy</field><field name="code">GUI</field><field name="zone_id" ref="zone_chnw"/></record>
+    <record id="loc_oragadam" model="gsus.location"><field name="name">Oragadam</field><field name="code">ORA</field><field name="zone_id" ref="zone_chnw"/></record>
+    <record id="loc_salem" model="gsus.location"><field name="name">Salem</field><field name="code">SLM</field><field name="zone_id" ref="zone_salem"/></record>
+    <record id="loc_krishnagiri" model="gsus.location"><field name="name">Krishnagiri</field><field name="code">KRI</field><field name="zone_id" ref="zone_salem"/></record>
+    <record id="loc_tiruvannamalai" model="gsus.location"><field name="name">Thiruvannamalai</field><field name="code">TVM</field><field name="zone_id" ref="zone_salem"/></record>
+    <record id="loc_vellore" model="gsus.location"><field name="name">Vellore</field><field name="code">VLR</field><field name="zone_id" ref="zone_salem"/></record>
+    <record id="loc_kanchipuram" model="gsus.location"><field name="name">Kanchipuram</field><field name="code">KPM</field><field name="zone_id" ref="zone_salem"/></record>
+    <record id="loc_namakkal" model="gsus.location"><field name="name">Namakkal</field><field name="code">NMK</field><field name="zone_id" ref="zone_salem"/></record>
+    <record id="loc_villiyanur" model="gsus.location"><field name="name">Villiyanur</field><field name="code">VIL</field><field name="zone_id" ref="zone_trichy"/></record>
+    <record id="loc_tindivanam" model="gsus.location"><field name="name">Tindivanam</field><field name="code">TIN</field><field name="zone_id" ref="zone_trichy"/></record>
+    <record id="loc_virudhachalam" model="gsus.location"><field name="name">Virudhachalam</field><field name="code">VIR</field><field name="zone_id" ref="zone_trichy"/></record>
+    <record id="loc_madurai" model="gsus.location"><field name="name">Madurai</field><field name="code">MDU</field><field name="zone_id" ref="zone_madurai"/></record>
+
+    <!-- Sheet 1 scope. Each tuple is (location external id, vehicle, helper, patroller, driver). -->
+    <function model="gsus.requirement" name="create">
+        <value eval="[
+            {'location_id': ref('loc_velachery'), 'resource_type_id': ref('type_vehicle'), 'required_count': 1}, {'location_id': ref('loc_velachery'), 'resource_type_id': ref('type_helper'), 'required_count': 4}, {'location_id': ref('loc_velachery'), 'resource_type_id': ref('type_patroller'), 'required_count': 2}, {'location_id': ref('loc_velachery'), 'resource_type_id': ref('type_driver'), 'required_count': 2},
+            {'location_id': ref('loc_tnagar'), 'resource_type_id': ref('type_vehicle'), 'required_count': 1}, {'location_id': ref('loc_tnagar'), 'resource_type_id': ref('type_helper'), 'required_count': 4}, {'location_id': ref('loc_tnagar'), 'resource_type_id': ref('type_patroller'), 'required_count': 3}, {'location_id': ref('loc_tnagar'), 'resource_type_id': ref('type_driver'), 'required_count': 2},
+            {'location_id': ref('loc_purasai'), 'resource_type_id': ref('type_vehicle'), 'required_count': 1}, {'location_id': ref('loc_purasai'), 'resource_type_id': ref('type_helper'), 'required_count': 4}, {'location_id': ref('loc_purasai'), 'resource_type_id': ref('type_patroller'), 'required_count': 2}, {'location_id': ref('loc_purasai'), 'resource_type_id': ref('type_driver'), 'required_count': 2},
+            {'location_id': ref('loc_siruseri'), 'resource_type_id': ref('type_vehicle'), 'required_count': 1}, {'location_id': ref('loc_siruseri'), 'resource_type_id': ref('type_helper'), 'required_count': 4}, {'location_id': ref('loc_siruseri'), 'resource_type_id': ref('type_patroller'), 'required_count': 3}, {'location_id': ref('loc_siruseri'), 'resource_type_id': ref('type_driver'), 'required_count': 2},
+            {'location_id': ref('loc_tambaram'), 'resource_type_id': ref('type_vehicle'), 'required_count': 1}, {'location_id': ref('loc_tambaram'), 'resource_type_id': ref('type_helper'), 'required_count': 4}, {'location_id': ref('loc_tambaram'), 'resource_type_id': ref('type_patroller'), 'required_count': 4}, {'location_id': ref('loc_tambaram'), 'resource_type_id': ref('type_driver'), 'required_count': 2},
+            {'location_id': ref('loc_ambattur'), 'resource_type_id': ref('type_vehicle'), 'required_count': 1}, {'location_id': ref('loc_ambattur'), 'resource_type_id': ref('type_helper'), 'required_count': 4}, {'location_id': ref('loc_ambattur'), 'resource_type_id': ref('type_patroller'), 'required_count': 4}, {'location_id': ref('loc_ambattur'), 'resource_type_id': ref('type_driver'), 'required_count': 2},
+            {'location_id': ref('loc_porur'), 'resource_type_id': ref('type_vehicle'), 'required_count': 1}, {'location_id': ref('loc_porur'), 'resource_type_id': ref('type_helper'), 'required_count': 4}, {'location_id': ref('loc_porur'), 'resource_type_id': ref('type_patroller'), 'required_count': 3}, {'location_id': ref('loc_porur'), 'resource_type_id': ref('type_driver'), 'required_count': 2}, {'location_id': ref('loc_porur'), 'resource_type_id': ref('type_splicer'), 'required_count': 1}, {'location_id': ref('loc_porur'), 'resource_type_id': ref('type_engineer'), 'required_count': 1},
+            {'location_id': ref('loc_guindy'), 'resource_type_id': ref('type_vehicle'), 'required_count': 1}, {'location_id': ref('loc_guindy'), 'resource_type_id': ref('type_helper'), 'required_count': 4}, {'location_id': ref('loc_guindy'), 'resource_type_id': ref('type_patroller'), 'required_count': 1}, {'location_id': ref('loc_guindy'), 'resource_type_id': ref('type_driver'), 'required_count': 2},
+            {'location_id': ref('loc_oragadam'), 'resource_type_id': ref('type_vehicle'), 'required_count': 1}, {'location_id': ref('loc_oragadam'), 'resource_type_id': ref('type_helper'), 'required_count': 2}, {'location_id': ref('loc_oragadam'), 'resource_type_id': ref('type_patroller'), 'required_count': 4}, {'location_id': ref('loc_oragadam'), 'resource_type_id': ref('type_driver'), 'required_count': 1}
+        ]"/>
+    </function>
+</odoo>

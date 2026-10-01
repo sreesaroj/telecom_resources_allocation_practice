@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="gsus_metric_card" name="GSUS Metric Card">
+        <div t-attf-class="gsus-metric gsus-metric--#{tone}">
+            <div class="gsus-metric__label"><t t-out="label"/></div>
+            <div class="gsus-metric__value"><t t-out="value"/></div>
+            <div class="gsus-metric__hint"><t t-out="hint"/></div>
+        </div>
+    </template>
+</odoo>

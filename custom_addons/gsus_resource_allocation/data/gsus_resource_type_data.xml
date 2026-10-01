@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Technical resource types only. Customer, Project, Zone, FRT and Scope
+         are operational data and must be entered/imported explicitly. -->
+    <record id="type_vehicle" model="gsus.resource.type"><field name="name">Vehicle</field><field name="code">VEHICLE</field><field name="category">vehicle</field><field name="sequence">10</field><field name="color">2</field></record>
+    <record id="type_driver" model="gsus.resource.type"><field name="name">Driver</field><field name="code">DRIVER</field><field name="category">person</field><field name="sequence">20</field><field name="color">4</field></record>
+    <record id="type_helper" model="gsus.resource.type"><field name="name">Helper</field><field name="code">HELPER</field><field name="category">person</field><field name="sequence">30</field><field name="color">3</field></record>
+    <record id="type_patroller" model="gsus.resource.type"><field name="name">Patroller</field><field name="code">PATROLLER</field><field name="category">person</field><field name="sequence">40</field><field name="color">1</field></record>
+    <record id="type_splicer" model="gsus.resource.type"><field name="name">Splicer</field><field name="code">SPLICER</field><field name="category">person</field><field name="sequence">50</field><field name="color">5</field></record>
+    <record id="type_engineer" model="gsus.resource.type"><field name="name">Engineer (OME)</field><field name="code">ENGINEER</field><field name="category">person</field><field name="sequence">60</field><field name="color">6</field></record>
+</odoo>

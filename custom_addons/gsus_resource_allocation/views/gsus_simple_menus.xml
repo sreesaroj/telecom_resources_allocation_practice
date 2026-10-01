@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="menu_gsus_root" model="ir.ui.menu"><field name="action" ref="action_gsus_frt_availability"/></record>
+    <record id="menu_gsus_dashboard" model="ir.ui.menu"><field name="active" eval="False"/></record>
+    <record id="menu_gsus_resource" model="ir.ui.menu"><field name="active" eval="False"/></record>
+    <record id="menu_gsus_availability" model="ir.ui.menu"><field name="active" eval="False"/></record>
+    <record id="menu_gsus_gap" model="ir.ui.menu"><field name="active" eval="False"/></record>
+    <record id="menu_gsus_assignment" model="ir.ui.menu"><field name="active" eval="False"/></record>
+    <record id="menu_gsus_request" model="ir.ui.menu"><field name="active" eval="False"/></record>
+    <record id="menu_gsus_service_category" model="ir.ui.menu"><field name="active" eval="False"/></record>
+    <record id="menu_gsus_district" model="ir.ui.menu"><field name="active" eval="False"/></record>
+    <record id="menu_gsus_worker" model="ir.ui.menu"><field name="active" eval="False"/></record>
+    <record id="menu_gsus_requirement" model="ir.ui.menu"><field name="active" eval="False"/></record>
+    <record id="menu_gsus_shift" model="ir.ui.menu"><field name="active" eval="False"/></record>
+
+    <menuitem id="menu_gsus_simple_frt_availability" name="FRT Availability" parent="menu_gsus_root" action="action_gsus_frt_availability" sequence="1" groups="gsus_resource_allocation.group_gsus_user"/>
+    <menuitem id="menu_gsus_simple_gap_summary" name="Gap Summary" parent="menu_gsus_root" action="action_gsus_frt_gaps" sequence="2" groups="gsus_resource_allocation.group_gsus_user"/>
+    <menuitem id="menu_gsus_simple_resources" name="Person Master" parent="menu_gsus_root" action="action_gsus_simple_resources" sequence="3" groups="gsus_resource_allocation.group_gsus_user"/>
+    <menuitem id="menu_gsus_vehicle_master" name="Vehicle Master" parent="menu_gsus_root" action="action_gsus_vehicle_master" sequence="4" groups="gsus_resource_allocation.group_gsus_user"/>
+</odoo>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_gsus_dashboard" model="ir.actions.act_url"><field name="name">GSUS Command Center</field><field name="url">/gsus/dashboard</field><field name="target">self</field></record>
+    <menuitem id="menu_gsus_root" name="GSUS Resources" action="action_gsus_availability" sequence="20" groups="gsus_resource_allocation.group_gsus_user"/>
+    <menuitem id="menu_gsus_dashboard" name="Dashboard" parent="menu_gsus_root" action="action_gsus_dashboard" sequence="5"/>
+    <menuitem id="menu_gsus_operations" name="Operations" parent="menu_gsus_root" sequence="10"/>
+    <menuitem id="menu_gsus_resource" name="Actual Resources" parent="menu_gsus_operations" action="action_gsus_resource" sequence="5"/>
+    <menuitem id="menu_gsus_availability" name="Daily Availability" parent="menu_gsus_operations" action="action_gsus_availability" sequence="10"/>
+    <menuitem id="menu_gsus_gap" name="Resource Gaps" parent="menu_gsus_operations" action="action_gsus_gap" sequence="20"/>
+    <menuitem id="menu_gsus_assignment" name="Assignments" parent="menu_gsus_operations" action="action_gsus_assignment" sequence="30"/>
+    <menuitem id="menu_gsus_request" name="Vendor Requests" parent="menu_gsus_operations" action="action_gsus_request" sequence="40"/>
+    <menuitem id="menu_gsus_masters" name="Masters" parent="menu_gsus_root" sequence="20" groups="gsus_resource_allocation.group_gsus_manager"/>
+    <menuitem id="menu_gsus_zone" name="Zones" parent="menu_gsus_masters" action="action_gsus_zone" sequence="10"/>
+    <menuitem id="menu_gsus_customer" name="Telecom Customers" parent="menu_gsus_masters" action="action_gsus_customers" sequence="5"/>
+    <menuitem id="menu_gsus_project" name="Telecom Projects" parent="menu_gsus_masters" action="action_gsus_projects" sequence="7"/>
+    <menuitem id="menu_gsus_service_category" name="Service Categories" parent="menu_gsus_masters" action="action_gsus_service_category" sequence="8"/>
+    <menuitem id="menu_gsus_location" name="FRT Locations" parent="menu_gsus_masters" action="action_gsus_location" sequence="20"/>
+    <menuitem id="menu_gsus_district" name="Districts" parent="menu_gsus_masters" action="action_gsus_district" sequence="15"/>
+    <menuitem id="menu_gsus_worker" name="Workers" parent="menu_gsus_masters" action="action_gsus_worker" sequence="30"/>
+    <menuitem id="menu_gsus_requirement" name="Resource Scope" parent="menu_gsus_masters" action="action_gsus_requirement" sequence="40"/>
+    <menuitem id="menu_gsus_resource_type" name="Resource Types" parent="menu_gsus_masters" action="action_gsus_resource_type" sequence="50"/>
+    <menuitem id="menu_gsus_shift" name="Shifts" parent="menu_gsus_masters" action="action_gsus_shift" sequence="60"/>
+</odoo>

@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_gsus_daily_entry_wizard_form" model="ir.ui.view">
+        <field name="name">gsus.daily.entry.wizard.form</field><field name="model">gsus.daily.entry.wizard</field>
+        <field name="arch" type="xml"><form string="Create Daily Entry"><group><field name="customer_id" options="{'no_create': True}"/><field name="project_id" options="{'no_create': True}"/><field name="availability_date"/></group><footer><button name="action_create_entries" string="Create Daily Entries" type="object" class="btn-primary"/><button string="Cancel" special="cancel" class="btn-secondary"/></footer></form></field>
+    </record>
+    <record id="action_gsus_daily_entry_wizard" model="ir.actions.act_window">
+        <field name="name">Create Daily Entry</field><field name="res_model">gsus.daily.entry.wizard</field><field name="view_mode">form</field><field name="target">new</field>
+    </record>
+    <record id="view_gsus_frt_availability_list" model="ir.ui.view">
+        <field name="name">gsus.frt.availability.list</field><field name="model">gsus.frt.availability</field>
+        <field name="arch" type="xml"><list decoration-success="total_gap == 0" decoration-warning="total_gap &gt; 0 and total_gap &lt; 3" decoration-danger="total_gap &gt;= 3"><header><button name="%(action_gsus_daily_entry_wizard)d" string="Create Daily Entry" type="action" class="btn-primary" display="always"/></header><field name="availability_date"/><field name="customer_id" optional="hide"/><field name="project_id"/><field name="zone_id"/><field name="location_id"/><field name="total_scope" sum="Scope"/><field name="total_available" sum="Available"/><field name="total_gap" sum="Gap"/><field name="readiness_percent"/><field name="as_on"/><field name="updated_by"/></list></field>
+    </record>
+    <record id="view_gsus_frt_availability_form" model="ir.ui.view">
+        <field name="name">gsus.frt.availability.form</field><field name="model">gsus.frt.availability</field>
+        <field name="arch" type="xml"><form><header><button name="action_refresh" string="Save Current Update" type="object" class="btn-primary"/></header><sheet><div class="oe_title"><label for="location_id" string="FRT"/><h1><field name="location_id"/></h1></div><group><group><field name="customer_id"/><field name="project_id"/><field name="zone_id"/><field name="responsible_id"/></group><group><field name="as_on"/><field name="updated_by"/><field name="total_scope"/><field name="total_available"/><field name="total_gap"/><field name="readiness_percent" widget="progressbar"/></group></group><notebook><page string="FRT Scope &amp; Availability"><field name="line_ids" context="{'default_location_id': location_id}"><list editable="bottom" decoration-success="gap_count == 0" decoration-warning="gap_status == 'temporary'" decoration-danger="gap_count &gt; 0"><field name="location_id" column_invisible="True"/><field name="resource_type_id"/><field name="scope_count"/><field name="available_resource_ids" widget="many2many_tags"/><field name="available_count"/><field name="alternate_count"/><field name="total_available"/><field name="gap_count"/><field name="gap_status" widget="badge"/><field name="gap_start_date" optional="show"/><field name="aging_days" optional="show"/><field name="expected_closure_date" optional="show"/><field name="responsible_id" optional="hide"/><field name="remarks"/></list></field></page><page string="Change History"><field name="history_ids" readonly="1"><list><field name="changed_on"/><field name="changed_by"/><field name="resource_type_id"/><field name="old_scope"/><field name="new_scope"/><field name="old_available"/><field name="new_available"/><field name="old_gap"/><field name="new_gap"/><field name="reason"/></list></field></page><page string="Notes"><field name="notes" placeholder="General FRT operational notes..."/></page></notebook></sheet><chatter/></form></field>
+    </record>
+    <record id="view_gsus_attendance_confirm_wizard_form" model="ir.ui.view">
+        <field name="name">gsus.attendance.confirm.wizard.form</field><field name="model">gsus.attendance.confirm.wizard</field>
+        <field name="arch" type="xml"><form string="Confirm Attendance"><group><field name="attendance_date"/></group><footer><button name="action_create_attendance" string="Create Attendance" type="object" class="btn-primary" confirm="Attendance will be created for all available and alternate persons on this date. Continue?"/><button string="Cancel" special="cancel" class="btn-secondary"/></footer></form></field>
+    </record>
+    <record id="view_hr_attendance_list_no_manual_create" model="ir.ui.view">
+        <field name="name">hr.attendance.list.no.manual.create</field><field name="model">hr.attendance</field>
+        <field name="inherit_id" ref="hr_attendance.view_attendance_tree"/>
+        <field name="arch" type="xml"><xpath expr="//list" position="attributes"><attribute name="create">0</attribute></xpath></field>
+    </record>
+    <record id="view_hr_attendance_management_no_manual_create" model="ir.ui.view">
+        <field name="name">hr.attendance.management.no.manual.create</field><field name="model">hr.attendance</field>
+        <field name="inherit_id" ref="hr_attendance.view_attendance_tree_management"/>
+        <field name="arch" type="xml"><xpath expr="//list" position="attributes"><attribute name="create">0</attribute></xpath></field>
+    </record>
+    <record id="action_gsus_attendance_confirm_wizard" model="ir.actions.act_window">
+        <field name="name">Confirm Attendance</field><field name="res_model">gsus.attendance.confirm.wizard</field><field name="view_mode">form</field><field name="target">new</field>
+    </record>
+    <record id="view_gsus_frt_availability_list_attendance" model="ir.ui.view">
+        <field name="name">gsus.frt.availability.list.attendance</field><field name="model">gsus.frt.availability</field>
+        <field name="inherit_id" ref="view_gsus_frt_availability_list"/>
+        <field name="arch" type="xml"><xpath expr="//list/header" position="inside"><button name="%(action_gsus_attendance_confirm_wizard)d" string="Confirm Attendance" type="action" class="btn-secondary" display="always"/></xpath></field>
+    </record>
+    <record id="view_gsus_frt_availability_form_daily" model="ir.ui.view">
+        <field name="name">gsus.frt.availability.form.daily</field><field name="model">gsus.frt.availability</field>
+        <field name="inherit_id" ref="view_gsus_frt_availability_form"/>
+        <field name="arch" type="xml"><field name="as_on" position="before"><field name="availability_date"/></field></field>
+    </record>
+    <record id="view_gsus_frt_availability_form_shift_timings" model="ir.ui.view">
+        <field name="name">gsus.frt.availability.form.shift.timings</field>
+        <field name="model">gsus.frt.availability</field>
+        <field name="inherit_id" ref="view_gsus_frt_availability_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook/page[1]" position="after">
+                <page string="Shift Timings">
+                    <group>
+                        <group string="First Shift">
+                            <field name="first_shift_check_in"/>
+                            <field name="first_shift_check_out"/>
+                        </group>
+                        <group string="Second Shift">
+                            <field name="second_shift_check_in"/>
+                            <field name="second_shift_check_out"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_gsus_frt_availability_form_vehicle_km" model="ir.ui.view">
+        <field name="name">gsus.frt.availability.form.vehicle.km</field>
+        <field name="model">gsus.frt.availability</field>
+        <field name="inherit_id" ref="view_gsus_frt_availability_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook/page[1]" position="after">
+                <page string="Vehicle KM Capture">
+                    <p class="text-muted">Vehicles selected in Available Vehicles or Alternate Vehicles are listed here automatically.</p>
+                    <field name="vehicle_km_line_ids" readonly="0">
+                        <list editable="bottom" create="false" delete="false">
+                            <field name="availability_date" column_invisible="True"/>
+                            <field name="vehicle_id" readonly="1"/>
+                            <field name="is_alternate" readonly="1"/>
+                            <field name="replaces_km_id" invisible="not is_alternate" options="{'no_create': True, 'no_create_edit': True}"/>
+                            <field name="starting_km"/>
+                            <field name="ending_km"/>
+                            <field name="total_km" readonly="1" sum="Total KM"/>
+                            <field name="replacement_km" readonly="1"/>
+                            <field name="operational_km" readonly="1"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_gsus_frt_vehicle_km_list" model="ir.ui.view">
+        <field name="name">gsus.frt.vehicle.km.list</field><field name="model">gsus.frt.vehicle.km</field>
+        <field name="arch" type="xml"><list><field name="availability_date"/><field name="customer_id" optional="hide"/><field name="project_id" optional="hide"/><field name="zone_id"/><field name="location_id"/><field name="vehicle_id"/><field name="vehicle_number"/><field name="is_alternate"/><field name="replaces_km_id" optional="show"/><field name="starting_km"/><field name="ending_km"/><field name="total_km" sum="Total KM"/><field name="replacement_km"/><field name="operational_km" sum="Operational KM"/></list></field>
+    </record>
+    <record id="view_gsus_frt_vehicle_km_search" model="ir.ui.view">
+        <field name="name">gsus.frt.vehicle.km.search</field><field name="model">gsus.frt.vehicle.km</field>
+        <field name="arch" type="xml"><search><field name="availability_date"/><field name="customer_id"/><field name="zone_id"/><field name="location_id"/><field name="vehicle_id"/><filter name="alternate" string="Alternate Vehicles" domain="[('is_alternate','=',True)]"/><group><filter name="group_location" string="FRT Location" context="{'group_by':'location_id'}"/><filter name="group_vehicle" string="Vehicle" context="{'group_by':'vehicle_id'}"/><filter name="group_month" string="Month" context="{'group_by':'availability_date:month'}"/></group></search></field>
+    </record>
+    <record id="view_gsus_frt_vehicle_km_pivot" model="ir.ui.view">
+        <field name="name">gsus.frt.vehicle.km.pivot</field><field name="model">gsus.frt.vehicle.km</field>
+        <field name="arch" type="xml"><pivot string="Vehicle KM Report"><field name="location_id" type="row"/><field name="vehicle_id" type="row"/><field name="availability_date" interval="month" type="col"/><field name="total_km" type="measure"/></pivot></field>
+    </record>
+    <record id="action_gsus_frt_vehicle_km" model="ir.actions.act_window">
+        <field name="name">Vehicle KM Dashboard</field><field name="res_model">gsus.frt.vehicle.km</field><field name="view_mode">pivot,list</field>
+    </record>
+    <record id="view_gsus_frt_alternate_allocation_list" model="ir.ui.view">
+        <field name="name">gsus.frt.alternate.allocation.list</field><field name="model">gsus.frt.alternate.allocation</field>
+        <field name="arch" type="xml"><list create="false" delete="false"><field name="availability_date"/><field name="customer_id" optional="hide"/><field name="project_id" optional="hide"/><field name="zone_id"/><field name="location_id"/><field name="resource_type_id"/><field name="original_resource_id"/><field name="original_employee_id" optional="hide"/><field name="alternate_resource_id"/><field name="alternate_employee_id" optional="hide"/><field name="remarks"/></list></field>
+    </record>
+    <record id="view_gsus_frt_alternate_allocation_search" model="ir.ui.view">
+        <field name="name">gsus.frt.alternate.allocation.search</field><field name="model">gsus.frt.alternate.allocation</field>
+        <field name="arch" type="xml"><search><field name="availability_date"/><field name="customer_id"/><field name="project_id"/><field name="zone_id"/><field name="location_id"/><field name="resource_type_id"/><field name="original_resource_id"/><field name="alternate_resource_id"/><group><filter name="group_date" string="Date" context="{'group_by':'availability_date'}"/><filter name="group_location" string="FRT Location" context="{'group_by':'location_id'}"/><filter name="group_type" string="Resource Type" context="{'group_by':'resource_type_id'}"/></group></search></field>
+    </record>
+    <record id="view_gsus_frt_alternate_allocation_pivot" model="ir.ui.view">
+        <field name="name">gsus.frt.alternate.allocation.pivot</field><field name="model">gsus.frt.alternate.allocation</field>
+        <field name="arch" type="xml"><pivot string="Temporary Alternate Employee Dashboard"><field name="location_id" type="row"/><field name="resource_type_id" type="col"/><field name="id" type="measure" string="Count"/></pivot></field>
+    </record>
+    <record id="action_gsus_frt_alternate_allocation" model="ir.actions.act_window">
+        <field name="name">Temporary Alternate Employees</field><field name="res_model">gsus.frt.alternate.allocation</field><field name="view_mode">list,pivot</field>
+    </record>
+    <record id="view_gsus_frt_availability_search" model="ir.ui.view"><field name="name">gsus.frt.availability.search</field><field name="model">gsus.frt.availability</field><field name="arch" type="xml"><search><field name="customer_id"/><field name="project_id"/><field name="zone_id"/><field name="location_id"/><filter name="with_gap" string="With Gap" domain="[('total_gap','&gt;',0)]"/><filter name="ready" string="No Gap" domain="[('total_gap','=',0)]"/><group><filter name="group_project" string="Project" context="{'group_by':'project_id'}"/><filter name="group_zone" string="Zone" context="{'group_by':'zone_id'}"/></group></search></field></record>
+    <record id="view_gsus_frt_availability_pivot" model="ir.ui.view"><field name="name">gsus.frt.availability.pivot</field><field name="model">gsus.frt.availability</field><field name="arch" type="xml"><pivot string="Sheet 1 - Current Availability"><field name="zone_id" type="row"/><field name="location_id" type="row"/><field name="total_scope" type="measure"/><field name="total_available" type="measure"/><field name="total_gap" type="measure"/></pivot></field></record>
+    <record id="action_gsus_frt_availability" model="ir.actions.act_window"><field name="name">FRT Availability</field><field name="res_model">gsus.frt.availability</field><field name="view_mode">list,pivot,form</field><field name="help" type="html"><p class="o_view_nocontent_smiling_face">Create one current availability record for each FRT</p><p>Set scope, choose available persons or vehicles, and the gap is calculated automatically.</p></field></record>
+
+    <record id="view_gsus_frt_gap_list" model="ir.ui.view"><field name="name">gsus.frt.availability.line.gap.list</field><field name="model">gsus.frt.availability.line</field><field name="arch" type="xml"><list decoration-danger="gap_count &gt; 0" decoration-warning="gap_status == 'temporary'"><field name="zone_id"/><field name="location_id"/><field name="resource_type_id"/><field name="scope_count"/><field name="available_count"/><field name="alternate_count"/><field name="gap_count" sum="Total Gap"/><field name="gap_start_date"/><field name="aging_days"/><field name="expected_closure_date"/><field name="responsible_id"/><field name="gap_status" widget="badge"/><field name="remarks"/></list></field></record>
+    <record id="view_gsus_frt_gap_search" model="ir.ui.view"><field name="name">gsus.frt.availability.line.gap.search</field><field name="model">gsus.frt.availability.line</field><field name="arch" type="xml"><search><field name="zone_id"/><field name="location_id"/><field name="resource_type_id"/><filter name="open_gap" string="Open Gaps" domain="[('gap_count','&gt;',0)]"/><group><filter name="group_zone" string="Zone" context="{'group_by':'zone_id'}"/><filter name="group_type" string="Resource Type" context="{'group_by':'resource_type_id'}"/><filter name="group_frt" string="FRT" context="{'group_by':'location_id'}"/></group></search></field></record>
+    <record id="view_gsus_frt_gap_pivot" model="ir.ui.view"><field name="name">gsus.frt.availability.line.gap.pivot</field><field name="model">gsus.frt.availability.line</field><field name="arch" type="xml"><pivot string="Sheet 2 - Zone Gap Summary"><field name="zone_id" type="row"/><field name="resource_type_id" type="col"/><field name="gap_count" type="measure"/></pivot></field></record>
+    <record id="action_gsus_frt_gaps" model="ir.actions.act_window"><field name="name">Gap Summary</field><field name="res_model">gsus.frt.availability.line</field><field name="view_mode">pivot,list</field><field name="domain">[('gap_count','&gt;',0)]</field><field name="context">{'search_default_open_gap': 1}</field></record>
+
+    <record id="view_gsus_resource_simple_list" model="ir.ui.view"><field name="name">gsus.resource.simple.list</field><field name="model">gsus.resource</field><field name="arch" type="xml"><list decoration-success="status == 'available'" decoration-danger="status != 'available'"><field name="code"/><field name="name"/><field name="resource_type_id"/><field name="status" widget="badge"/><field name="active"/><field name="remarks"/></list></field></record>
+    <record id="view_gsus_resource_simple_form" model="ir.ui.view">
+        <field name="name">gsus.resource.simple.form</field><field name="model">gsus.resource</field><field name="priority">1</field>
+        <field name="arch" type="xml">
+            <form string="Person Master"><sheet>
+                <div class="oe_title"><label for="name"/><h1><field name="name" placeholder="Person name (optional)"/></h1></div>
+                <group><group>
+                    <field name="code" readonly="1"/><field name="resource_type_id" domain="[('category', '=', 'person')]" options="{'no_create': True, 'no_create_edit': True}"/><field name="is_driver" invisible="1"/>
+                    <field name="employee_id" readonly="1" invisible="resource_source != 'person'"/>
+                    <field name="employment_type"/><field name="ownership"/><field name="vendor_id" invisible="ownership != 'vendor'"/>
+                </group><group>
+                    <field name="shift_id" invisible="1"/><field name="status"/><field name="active"/>
+                </group></group>
+                <notebook invisible="resource_source != 'person'">
+                    <page string="Personal Details"><group><group>
+                        <field name="personal_phone" required="1"/><field name="personal_email"/><field name="date_of_birth"/>
+                        <field name="gender"/><field name="identification_no" required="1"/>
+                    </group><group>
+                        <field name="work_phone"/><field name="work_email"/><field name="driving_license_number" invisible="not is_driver"/><field name="driving_license_expiry_date" invisible="not is_driver"/><field name="emergency_contact"/>
+                        <field name="emergency_phone"/><field name="private_address"/>
+                    </group></group></page>
+                    <page string="Employment &amp; Bank Details"><group><group><field name="joining_date"/></group><group>
+                        <field name="bank_account_holder_name"/><field name="bank_account_no"/><field name="bank_name"/><field name="bank_branch"/><field name="bank_ifsc"/><field name="bank_address"/>
+                    </group></group></page>
+                    <page string="Documents">
+                        <group><field name="aadhaar_attachment_ids" widget="many2many_binary"/><field name="bank_passbook_attachment_ids" widget="many2many_binary"/><field name="driving_license_attachment_ids" widget="many2many_binary" invisible="not is_driver"/></group>
+                    </page>
+                    <page string="Notes"><field name="remarks" placeholder="Person, availability or operational notes..."/></page>
+                </notebook>
+            </sheet><chatter/></form>
+        </field>
+    </record>
+    <record id="view_gsus_resource_simple_form_shift" model="ir.ui.view"><field name="name">gsus.resource.simple.form.shift</field><field name="model">gsus.resource</field><field name="inherit_id" ref="view_gsus_resource_simple_form"/><field name="arch" type="xml"><field name="shift_id" position="attributes"><attribute name="invisible">0</attribute><attribute name="string">Shift</attribute><attribute name="required">0</attribute></field></field></record>
+    <record id="action_gsus_simple_resources" model="ir.actions.act_window"><field name="name">Person Master</field><field name="res_model">gsus.resource</field><field name="view_mode">list,form</field><field name="domain">[('resource_type_id.category', '=', 'person')]</field><field name="view_ids" eval="[(5,0,0),(0,0,{'view_mode':'list','view_id':ref('view_gsus_resource_simple_list')}),(0,0,{'view_mode':'form','view_id':ref('view_gsus_resource_simple_form')})]"/></record>
+
+    <record id="view_employee_form_gsus_driver_details" model="ir.ui.view">
+        <field name="name">hr.employee.form.gsus.driver.details</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <field name="private_phone" position="after">
+                <field name="work_permit_expiration_date" string="Driving Licence Expiry Date"/>
+            </field>
+        </field>
+    </record>
+</odoo>

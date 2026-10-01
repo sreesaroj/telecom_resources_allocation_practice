@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_my_home_gsus" inherit_id="portal.portal_my_home" priority="35">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="icon" t-value="'/gsus_resource_allocation/static/src/img/command-center.svg'"/>
+                <t t-set="title">My FRT Resources</t>
+                <t t-set="text">Live availability, assigned team and open gaps</t>
+                <t t-set="url" t-value="'/my/gsus'"/>
+                <t t-set="placeholder_count" t-value="'gsus_location_count'"/>
+            </t>
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">Available Telecom Resources</t><t t-set="text">Select employees or vehicles and raise a request</t><t t-set="url" t-value="'/my/gsus/resources'"/>
+            </t>
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">My Resource Requests</t><t t-set="text">Track submitted, approved and allocated requests</t><t t-set="url" t-value="'/my/gsus/requests'"/><t t-set="placeholder_count" t-value="'gsus_request_count'"/>
+            </t>
+        </xpath>
+    </template>
+
+    <template id="portal_gsus_dashboard" name="GSUS Resource Command Center">
+        <t t-call="portal.portal_layout">
+            <div class="gsus-shell py-4">
+                <section class="gsus-hero">
+                    <div><span class="gsus-eyebrow">GSUS OPERATIONS</span><h1>Resource Command Center</h1><p>One clear view of FRT readiness, manpower and action-required gaps.</p></div>
+                    <div class="d-flex flex-column align-items-end gap-3">
+                        <div class="gsus-live"><span></span> LIVE OPERATIONS</div>
+                        <a t-if="is_internal" href="/odoo" class="btn btn-light rounded-pill px-4 fw-bold">← Back to Odoo</a>
+                    </div>
+                </section>
+                <section class="gsus-metrics">
+                    <t t-call="gsus_resource_allocation.gsus_metric_card"><t t-set="label">FRT Locations</t><t t-set="value" t-value="len(locations)"/><t t-set="hint">Assigned operational sites</t><t t-set="tone">blue</t></t>
+                    <t t-call="gsus_resource_allocation.gsus_metric_card"><t t-set="label">Required</t><t t-set="value" t-value="total_required"/><t t-set="hint">Latest submitted scope</t><t t-set="tone">violet</t></t>
+                    <t t-call="gsus_resource_allocation.gsus_metric_card"><t t-set="label">Available</t><t t-set="value" t-value="total_available"/><t t-set="hint">Ready for deployment</t><t t-set="tone">green</t></t>
+                    <t t-call="gsus_resource_allocation.gsus_metric_card"><t t-set="label">Open Gap</t><t t-set="value" t-value="sum(gaps.mapped('gap_count'))"/><t t-set="hint">Needs attention</t><t t-set="tone">red</t></t>
+                </section>
+                <section class="gsus-panel mt-4">
+                    <div class="gsus-panel__head"><div><span class="gsus-eyebrow">VENDOR ALLOCATION</span><h2>Resource Request Pipeline</h2></div><div class="d-flex gap-2"><a href="/my/gsus/resources" class="btn btn-primary rounded-pill">Browse Resources</a><a href="/my/gsus/requests" class="btn btn-outline-primary rounded-pill">My Requests</a></div></div>
+                    <div class="row g-3"><div class="col-6 col-lg-3"><div class="p-3 bg-light rounded-3"><small class="text-muted">AVAILABLE</small><h3 class="mb-0" t-out="available_resource_count"/></div></div><div class="col-6 col-lg-3"><div class="p-3 bg-light rounded-3"><small class="text-muted">RESERVED</small><h3 class="mb-0" t-out="reserved_resource_count"/></div></div><div class="col-6 col-lg-3"><div class="p-3 bg-light rounded-3"><small class="text-muted">ALLOCATED</small><h3 class="mb-0" t-out="allocated_resource_count"/></div></div><div class="col-6 col-lg-3"><div class="p-3 bg-light rounded-3"><small class="text-muted">OPEN REQUESTS</small><h3 class="mb-0" t-out="open_request_count"/></div></div></div>
+                </section>
+                <section class="gsus-panel mt-4">
+                    <div class="gsus-panel__head"><div><span class="gsus-eyebrow">NETWORK READINESS</span><h2>FRT Overview</h2></div><span class="text-muted"><t t-out="len(locations)"/> locations</span></div>
+                    <div class="gsus-location-grid">
+                        <a t-foreach="locations" t-as="location" t-att-href="'/my/gsus/location/%s' % location.id" class="gsus-location-card">
+                            <t t-set="sheet" t-value="latest_by_location.get(location.id)"/>
+                            <div class="d-flex justify-content-between"><span class="gsus-zone"><t t-out="location.zone_id.name"/></span><span t-attf-class="gsus-dot #{'ok' if sheet and not sheet.total_gap else 'warn'}"></span></div>
+                            <h3><t t-out="location.name"/></h3>
+                            <t t-if="sheet"><div class="gsus-bar"><span t-att-style="'width: ' + str(round(sheet.availability_percent)) + '%'"> </span></div><div class="d-flex justify-content-between small"><span><t t-out="sheet.total_available"/> / <t t-out="sheet.total_required"/> ready</span><strong><t t-out="str(round(sheet.availability_percent)) + '%'"/></strong></div></t>
+                            <t t-else=""><p class="text-muted mb-0">No submitted snapshot yet</p></t>
+                        </a>
+                    </div>
+                </section>
+                <section class="gsus-panel mt-4" t-if="gaps">
+                    <div class="gsus-panel__head"><div><span class="gsus-eyebrow text-danger">ACTION BOARD</span><h2>Open Resource Gaps</h2></div></div>
+                    <div class="table-responsive"><table class="table gsus-table"><thead><tr><th>FRT</th><th>Zone</th><th>Resource</th><th>Gap</th><th>Aging</th><th>Status</th></tr></thead><tbody><tr t-foreach="gaps" t-as="gap"><td><strong t-out="gap.location_id.name"/></td><td t-out="gap.zone_id.name"/><td t-out="gap.resource_type_id.name"/><td><span class="badge text-bg-danger" t-out="gap.gap_count"/></td><td><t t-out="gap.aging_days"/> days</td><td><span class="badge rounded-pill text-bg-warning" t-out="dict(gap._fields['state'].selection).get(gap.state)"/></td></tr></tbody></table></div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_gsus_location" name="GSUS FRT Detail">
+        <t t-call="portal.portal_layout">
+            <div class="gsus-shell py-4">
+                <a href="/my/gsus" class="gsus-back">← Command Center</a>
+                <section class="gsus-hero gsus-hero--compact"><div><span class="gsus-eyebrow" t-out="location.zone_id.name"/><h1 t-out="location.name"/><p>FRT team readiness and active resource position.</p></div><div class="gsus-live"><span></span> FRT DETAIL</div></section>
+                <section class="gsus-metrics" t-if="latest">
+                    <t t-call="gsus_resource_allocation.gsus_metric_card"><t t-set="label">Required</t><t t-set="value" t-value="latest.total_required"/><t t-set="hint">Configured shift scope</t><t t-set="tone">violet</t></t>
+                    <t t-call="gsus_resource_allocation.gsus_metric_card"><t t-set="label">Available</t><t t-set="value" t-value="latest.total_available"/><t t-set="hint">Current readiness</t><t t-set="tone">green</t></t>
+                    <t t-call="gsus_resource_allocation.gsus_metric_card"><t t-set="label">Gap</t><t t-set="value" t-value="latest.total_gap"/><t t-set="hint">Shortfall</t><t t-set="tone">red</t></t>
+                    <t t-call="gsus_resource_allocation.gsus_metric_card"><t t-set="label">Readiness</t><t t-set="value" t-value="str(round(latest.availability_percent)) + '%'"/><t t-set="hint" t-value="latest.availability_date"/><t t-set="tone">blue</t></t>
+                </section>
+                <div class="row g-4 mt-1">
+                    <div class="col-lg-7"><section class="gsus-panel h-100"><div class="gsus-panel__head"><h2>Assigned Team</h2><span class="text-muted" t-out="len(assignments)"/></div><div class="table-responsive"><table class="table gsus-table"><thead><tr><th>Name</th><th>Role</th><th>Type</th><th>Shift</th></tr></thead><tbody><tr t-foreach="assignments" t-as="assignment"><td><strong t-out="assignment.worker_id.name"/></td><td t-out="assignment.resource_type_id.name"/><td class="text-capitalize" t-out="assignment.worker_id.employment_type"/><td class="text-capitalize" t-out="assignment.shift"/></tr><tr t-if="not assignments"><td colspan="4" class="text-center text-muted py-4">No named workers assigned yet.</td></tr></tbody></table></div></section></div>
+                    <div class="col-lg-5"><section class="gsus-panel h-100"><div class="gsus-panel__head"><h2>Open Gaps</h2></div><div t-foreach="gaps" t-as="gap" class="gsus-gap-item"><div><strong t-out="gap.resource_type_id.name"/><small><t t-out="gap.aging_days"/> days open</small></div><span class="badge text-bg-danger">-<t t-out="gap.gap_count"/></span></div><div t-if="not gaps" class="gsus-empty">✓ No open resource gaps</div></section></div>
+                </div>
+                <section class="gsus-panel mt-4" t-if="latest"><div class="gsus-panel__head"><h2>Latest Shift Availability</h2><span><t t-out="latest.availability_date"/> · <span class="text-capitalize" t-out="latest.shift"/></span></div><div class="table-responsive"><table class="table gsus-table"><thead><tr><th>Resource</th><th>Required</th><th>Available</th><th>Temporary</th><th>Gap</th><th>Remarks</th></tr></thead><tbody><tr t-foreach="latest.line_ids" t-as="line"><td><strong t-out="line.resource_type_id.name"/></td><td t-out="line.required_count"/><td t-out="line.available_count"/><td t-out="line.temporary_count"/><td><span t-attf-class="badge #{'text-bg-danger' if line.gap_count else 'text-bg-success'}" t-out="line.gap_count"/></td><td t-out="line.remarks or '—'"/></tr></tbody></table></div></section>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_available_resources" name="Available Telecom Resources">
+        <t t-call="portal.portal_layout"><div class="gsus-shell py-4"><a href="/my/gsus" class="gsus-back">← Resource Command Center</a>
+            <section class="gsus-hero gsus-hero--compact"><div><span class="gsus-eyebrow">VENDOR PORTAL</span><h1>Available Resources</h1><p>Filter selectable units and reserve them through one controlled request.</p></div></section>
+            <div t-if="request.params.get('error')" class="alert alert-danger mt-3" t-out="request.params.get('error')"/>
+            <section class="gsus-panel mt-4"><form method="get" class="row g-3 align-items-end"><div class="col-md-4"><label class="form-label">Project</label><select name="project_id" class="form-select"><option value="">All allowed projects</option><option t-foreach="projects" t-as="project" t-att-value="project.id" t-att-selected="project.id == selected_project" t-out="project.name"/></select></div><div class="col-md-3"><label class="form-label">FRT</label><select name="location_id" class="form-select"><option value="">All FRTs</option><option t-foreach="locations" t-as="location" t-att-value="location.id" t-att-selected="location.id == selected_location" t-out="location.name"/></select></div><div class="col-md-3"><label class="form-label">Resource Type</label><select name="resource_type_id" class="form-select"><option value="">All types</option><option t-foreach="resource_types" t-as="resource_type" t-att-value="resource_type.id" t-att-selected="resource_type.id == selected_type" t-out="resource_type.name"/></select></div><div class="col-md-2"><button class="btn btn-dark w-100">Filter</button></div></form></section>
+            <form action="/my/gsus/request/create" method="post"><input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <section class="gsus-panel mt-4"><div class="gsus-panel__head"><h2>Select Resources</h2><span><t t-out="len(resources)"/> available</span></div><div class="table-responsive"><table class="table gsus-table"><thead><tr><th>Select</th><th>Resource</th><th>Type</th><th>Contact Number</th><th>Driving Licence Number</th><th>Driving Licence Expiry</th><th>Project</th><th>FRT</th><th>Shift</th><th>Status</th></tr></thead><tbody><tr t-foreach="resources" t-as="resource"><td><input class="form-check-input" type="checkbox" name="resource_ids" t-att-value="resource.id"/></td><td><strong t-out="resource.name"/><small class="d-block text-muted" t-out="resource.code"/></td><td t-out="resource.resource_type_id.name"/><td t-out="resource.personal_phone or resource.work_phone or '—'"/><td t-out="resource.driving_license_number if resource.is_driver else '—'"/><td><span t-if="resource.is_driver and resource.driving_license_expiry_date" t-field="resource.driving_license_expiry_date"/><span t-else="">—</span></td><td t-out="resource.project_id.name"/><td t-out="resource.location_id.name"/><td t-out="resource.shift_id.name"/><td><span class="badge text-bg-success">Available</span></td></tr><tr t-if="not resources"><td colspan="10" class="text-center text-muted py-5">No available resources in your permitted projects.</td></tr></tbody></table></div></section>
+                <section class="gsus-panel mt-4" t-if="resources"><div class="row g-3"><div class="col-md-4"><label class="form-label">Required From</label><input name="required_from" type="datetime-local" class="form-control" required="required"/></div><div class="col-md-4"><label class="form-label">Required To</label><input name="required_to" type="datetime-local" class="form-control" required="required"/></div><div class="col-md-4"><label class="form-label">Notes</label><input name="notes" class="form-control" placeholder="Deployment purpose"/></div></div><button type="submit" class="btn btn-primary btn-lg rounded-pill mt-3 px-5">Submit &amp; Reserve Selected</button><p class="small text-muted mt-2 mb-0">Select units from the same FRT and shift. Availability is rechecked securely on submission.</p></section>
+            </form></div></t>
+    </template>
+
+    <template id="portal_resource_requests" name="My Resource Requests"><t t-call="portal.portal_layout"><div class="gsus-shell py-4"><a href="/my/gsus" class="gsus-back">← Resource Command Center</a><section class="gsus-hero gsus-hero--compact"><div><span class="gsus-eyebrow">REQUEST HISTORY</span><h1>My Resource Requests</h1><p>Track reservations, approvals and allocations.</p></div><a href="/my/gsus/resources" class="btn btn-light rounded-pill">New Request</a></section><section class="gsus-panel mt-4"><div class="table-responsive"><table class="table gsus-table"><thead><tr><th>Request</th><th>Project / FRT</th><th>Period</th><th>Resources</th><th>Status</th></tr></thead><tbody><tr t-foreach="requests" t-as="record"><td><a t-att-href="'/my/gsus/requests/%s' % record.id" t-out="record.name"/></td><td><strong t-out="record.project_id.name"/><small class="d-block text-muted" t-out="record.location_id.name"/></td><td><span t-field="record.required_from" t-options="{'widget':'datetime'}"/> – <span t-field="record.required_to" t-options="{'widget':'datetime'}"/></td><td t-out="record.resource_count"/><td><span class="badge text-bg-primary text-capitalize" t-out="dict(record._fields['state'].selection).get(record.state)"/></td></tr><tr t-if="not requests"><td colspan="5" class="text-center text-muted py-5">No requests yet.</td></tr></tbody></table></div></section></div></t></template>
+
+    <template id="portal_resource_request_detail" name="Resource Request Detail"><t t-call="portal.portal_layout"><div class="gsus-shell py-4"><a href="/my/gsus/requests" class="gsus-back">← My Requests</a><div t-if="created" class="alert alert-success">Request submitted and selected resources reserved successfully.</div><section class="gsus-hero gsus-hero--compact"><div><span class="gsus-eyebrow">RESOURCE REQUEST</span><h1 t-out="resource_request.name"/><p><t t-out="resource_request.project_id.name"/> · <t t-out="resource_request.location_id.name"/></p></div><span class="badge bg-light text-dark fs-6 text-capitalize" t-out="dict(resource_request._fields['state'].selection).get(resource_request.state)"/></section><section class="gsus-panel mt-4"><div class="row g-3 mb-4"><div class="col-md-3"><small class="text-muted">SHIFT</small><strong class="d-block" t-out="resource_request.shift_id.name"/></div><div class="col-md-3"><small class="text-muted">REQUIRED FROM</small><strong class="d-block" t-field="resource_request.required_from"/></div><div class="col-md-3"><small class="text-muted">REQUIRED TO</small><strong class="d-block" t-field="resource_request.required_to"/></div><div class="col-md-3"><small class="text-muted">RESOURCE COUNT</small><strong class="d-block" t-out="resource_request.resource_count"/></div></div><table class="table gsus-table"><thead><tr><th>Resource</th><th>Type</th><th>Status</th></tr></thead><tbody><tr t-foreach="resource_request.request_line_ids" t-as="line"><td><strong t-out="line.resource_id.name"/><small class="d-block text-muted" t-out="line.resource_id.code"/></td><td t-out="line.resource_type_id.name"/><td><span class="badge text-bg-warning text-capitalize" t-out="dict(line.resource_id._fields['status'].selection).get(line.resource_id.status)"/></td></tr></tbody></table></section></div></t></template>
+</odoo>

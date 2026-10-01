@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_gsus_resource_type_group_fields" model="ir.ui.view">
+        <field name="name">gsus.resource.type.group.fields</field><field name="model">gsus.resource.type</field><field name="inherit_id" ref="gsus_resource_allocation.view_gsus_resource_type_list"/>
+        <field name="arch" type="xml"><xpath expr="//field[@name='name']" position="before"><field name="customer_id"/><field name="project_id"/></xpath></field>
+    </record>
+
+    <record id="action_gsus_zone" model="ir.actions.act_window"><field name="context">{'group_by': ['customer_id', 'project_id']}</field></record>
+    <record id="action_gsus_location" model="ir.actions.act_window"><field name="context">{'group_by': ['customer_id', 'project_id']}</field></record>
+    <record id="action_gsus_resource_type" model="ir.actions.act_window"><field name="context">{'group_by': ['customer_id', 'project_id']}</field></record>
+    <record id="action_gsus_simple_resources" model="ir.actions.act_window"><field name="name">Person Master</field><field name="domain">[('resource_source','!=','vehicle')]</field><field name="context">{}</field></record>
+    <record id="action_gsus_vehicle_master" model="ir.actions.act_window"><field name="context">{}</field></record>
+    <record id="action_gsus_frt_availability" model="ir.actions.act_window"><field name="context">{'group_by': ['availability_date:month', 'availability_date:day', 'customer_id', 'project_id', 'zone_id']}</field></record>
+</odoo>

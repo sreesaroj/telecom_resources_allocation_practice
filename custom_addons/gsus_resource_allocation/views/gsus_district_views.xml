@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_gsus_district_list" model="ir.ui.view"><field name="name">gsus.district.list</field><field name="model">gsus.district</field><field name="arch" type="xml"><list editable="bottom"><field name="name"/><field name="code"/><field name="circle"/><field name="customer_id"/><field name="project_id"/><field name="zone_id"/><field name="active"/></list></field></record>
+    <record id="view_gsus_district_form" model="ir.ui.view"><field name="name">gsus.district.form</field><field name="model">gsus.district</field><field name="arch" type="xml"><form><sheet><div class="oe_title"><label for="name"/><h1><field name="name"/></h1></div><group><group><field name="code"/><field name="circle"/></group><group><field name="zone_id"/><field name="project_id"/><field name="customer_id"/><field name="active"/></group></group></sheet></form></field></record>
+    <record id="action_gsus_district" model="ir.actions.act_window"><field name="name">Districts</field><field name="res_model">gsus.district</field><field name="view_mode">list,form</field></record>
+</odoo>

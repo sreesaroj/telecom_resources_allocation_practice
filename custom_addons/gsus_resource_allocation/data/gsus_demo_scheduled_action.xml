@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="ir_cron_gsus_sync_server_demo_data" model="ir.cron">
+        <field name="name">GSUS: Create / Update Server Demo Data</field>
+        <field name="model_id" ref="model_gsus_frt_availability"/>
+        <field name="state">code</field>
+        <field name="code">model.action_sync_server_demo_data()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">months</field>
+        <field name="active" eval="False"/>
+    </record>
+    <record id="ir_cron_gsus_sync_jio_demo_data" model="ir.cron">
+        <field name="name">GSUS: Create / Update Jio Demo Data</field>
+        <field name="model_id" ref="model_gsus_frt_availability"/>
+        <field name="state">code</field>
+        <field name="code">model.action_sync_jio_demo_data()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">months</field>
+        <field name="active" eval="False"/>
+    </record>
+</odoo>
